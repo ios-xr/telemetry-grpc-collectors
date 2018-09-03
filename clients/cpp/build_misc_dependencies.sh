@@ -9,6 +9,8 @@
 
 set -ex
 
+SCRIPT_DIR="$(cd "$(dirname "${0}")"; echo "$(pwd)")"
+
 BUILD_DIR="$(readlink -f "$(dirname "$0")")"
 export DESTDIR=""
 mkdir -p "$BUILD_DIR/deps"
@@ -99,6 +101,8 @@ apt-get install -y libdouble-conversion-dev \
 
 install_glog
 install_gflags
+
+rm -rf ${SCRIPT_DIR}/deps
 
 echo "Miscellaneous Dependencies built and installed successfully"
 exit 0
