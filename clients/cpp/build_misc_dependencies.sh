@@ -23,25 +23,6 @@ find_github_hash() {
   fi
 }
 
-install_folly() {
-  pushd .
-  if [[ ! -e "folly" ]]; then
-    git clone https://github.com/facebook/folly
-  fi
-  rev=$(find_github_hash facebook/folly)
-  cd folly/folly
-  if [[ ! -z "$rev" ]]; then
-    git fetch origin
-    git checkout "$rev"
-  fi
-  autoreconf -ivf
-  ./configure LIBS="-lpthread"
-  make
-  make install
-  ldconfig
-  popd
-}
-
 install_glog() {
   pushd .
   if [[ ! -e "glog" ]]; then
@@ -118,7 +99,6 @@ apt-get install -y libdouble-conversion-dev \
 
 install_glog
 install_gflags
-install_folly
 
 echo "Miscellaneous Dependencies built and installed successfully"
 exit 0

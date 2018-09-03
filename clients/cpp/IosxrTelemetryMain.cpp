@@ -18,8 +18,6 @@ getEnvVar(std::string const & key)
 
 
 TelemetryStream* asynchandler_telemetry_signum;
-IosxrslVrf* vrfhandler_signum;
-AsyncNotifChannel* asynchandler_slapi_signum;
 
 bool sighandle_initiated = false;
 
@@ -31,23 +29,9 @@ signalHandler(int signum)
        sighandle_initiated = true;
        VLOG(1) << "Interrupt signal (" << signum << ") received.";
 
-       // Clear out the last vrfRegMsg batch
-       vrfhandler_signum->vrf_msg.clear_vrfregmsgs();
-
-       // Create a fresh SLVrfRegMsg batch for cleanup
-       vrfhandler_signum->vrfRegMsgAdd("default");
-
-       vrfhandler_signum->unregisterVrf(AF_INET);
-       vrfhandler_signum->unregisterVrf(AF_INET6);
-
        // Shutdown the Telemetry Async Notification Channel  
        asynchandler_telemetry_signum->Shutdown();
-       // Shutdown the SLAPI Async Notification Channel  
-       asynchandler_slapi_signum->Shutdown();
 
-
-       //terminate program  
-       //exit(signum);  
     } 
 }
 
@@ -55,13 +39,22 @@ int main(int argc, char** argv) {
    
     auto server_ip = getEnvVar("SERVER_IP");
     auto server_port = getEnvVar("SERVER_PORT");
+    
+    auto xr_user=getEnvVar("XR_USER");
+    auto xr_passwd=getEnvVar("XR_PASSWORD");
 
-    if (server_ip == "" || server_port == "") {
+    if (server_ip == "" || server_port == "" || xr_user == "" || xr_passwd == "" ) {
         if (server_ip == "") {
             LOG(ERROR) << "SERVER_IP environment variable not set";
         }
         if (server_port == "") {
             LOG(ERROR) << "SERVER_PORT environment variable not set";
+        }
+        if (xr_user == "") {
+            LOG(ERROR) << "XR_USER environment variable not set";
+        }
+        if (xr_passwd == "") {
+            LOG(ERROR) << "XR_PASSWORD environment variable not set";
         }
         return 1;
 
@@ -73,46 +66,9 @@ int main(int argc, char** argv) {
                              grpc_server, grpc::InsecureChannelCredentials());
 
 
-   LOG(INFO) << "Connecting IOS-XR to gRPC server at " << grpc_server;
+   LOG(INFO) << "Connecting to IOS-XR gRPC server at " << grpc_server;
 
 
-    AsyncNotifChannel slapi_asynchandler(channel);
-
-    // Acquire the lock
-    std::unique_lock<std::mutex> initlock(init_mutex);
-
-    // Spawn reader thread that maintains our Notification Channel
-    std::thread slapi_thread_ = std::thread(&AsyncNotifChannel::AsyncCompleteRpc, &slapi_asynchandler);
-
-
-    service_layer::SLInitMsg init_msg;
-    init_msg.set_majorver(service_layer::SL_MAJOR_VERSION);
-    init_msg.set_minorver(service_layer::SL_MINOR_VERSION);
-    init_msg.set_subver(service_layer::SL_SUB_VERSION);
-
-
-    slapi_asynchandler.SendInitMsg(init_msg);
-
-    // Wait on the mutex lock
-    while (!init_success) {
-        init_condVar.wait(initlock);
-    }
-
-    // Set up a new channel for vrf/route messages
-
-    IosxrslVrf vrfhandler(grpc::CreateChannel(
-                              grpc_server, grpc::InsecureChannelCredentials()));
-
-    // Create a new SLVrfRegMsg batch
-    vrfhandler.vrfRegMsgAdd("default", 10, 500);
-
-    // Register the SLVrfRegMsg batch for v4 and v6
-    vrfhandler.registerVrf(AF_INET);
-    vrfhandler.registerVrf(AF_INET6);
-
-
-
- 
     // Start the Telemetry stream
     TelemetryStream telem_asynchandler(channel);
 
@@ -120,26 +76,18 @@ int main(int argc, char** argv) {
     std::thread telemetry_thread_ = std::thread(&TelemetryStream::AsyncCompleteRpc, &telem_asynchandler);
 
 
-
-    telem_asynchandler.SetCredentials("vagrant", "vagrant");
+    telem_asynchandler.SetCredentials(xr_user, xr_passwd);
 
     telem_asynchandler.AddSubscription(99,
                                  IOSXR_TELEMETRY_DIALIN_GPB,
                                  "IPV6");
 
-    //asynchandler.AddSubscription(99,
-    //                             IOSXR_TELEMETRY_DIALIN_GPB,
-    //                            "INTERFACESSUB");
-
     telem_asynchandler.SubscribeAll();
 
     asynchandler_telemetry_signum = &telem_asynchandler;
-    vrfhandler_signum = &vrfhandler;
-    asynchandler_slapi_signum = &slapi_asynchandler;
 
     signal(SIGINT, signalHandler);  
     LOG(INFO) << "Press control-c to quit";
     telemetry_thread_.join();
-    slapi_thread_.join();
     return 0;
 }

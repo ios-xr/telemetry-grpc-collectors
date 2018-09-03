@@ -2,8 +2,8 @@
 
 # Standard python libs
 import os,sys
-sys.path.append("../build/python/src/genpy")
-sys.path.append("./build/python/src/genpy/src/genpy/cisco_ios_xr_ipv6_nd_oper/ipv6_node_discovery/nodes/node/neighbor_interfaces/neighbor_interface/host_addresses/host_address/")
+sys.path.append("../../build/python/src/genpy")
+sys.path.append("../../build/python/src/genpy/src/genpy/cisco_ios_xr_ipv6_nd_oper/ipv6_node_discovery/nodes/node/neighbor_interfaces/neighbor_interface/host_addresses/host_address/")
 import ast, pprint 
 import pdb
 import yaml, json
@@ -16,7 +16,7 @@ from ipv6_nd_neighbor_entry_pb2 import ipv6_nd_neighbor_entry_KEYS, ipv6_nd_neig
 #
 # Get the GRPC Server IP address and port number
 #
-def get_server_ip_port():
+def get_environment_variables():
     # Get GRPC Server's IP from the environment
     if 'SERVER_IP' not in os.environ.keys():
         print "Need to set the SERVER_IP env variable e.g."
@@ -28,16 +28,31 @@ def get_server_ip_port():
         print "Need to set the SERVER_PORT env variable e.g."
         print "export SERVER_PORT='57777'"
         os._exit(0)
+
+
+    # Get XR Username from the environment
+    if 'XR_USER' not in os.environ.keys():
+        print "Need to set the XR_USER env variable e.g."
+        print "export XR_USER='admin'"
+        os._exit(0)
+
+    # Get XR Password from the environment
+    if 'XR_PASSWORD' not in os.environ.keys():
+        print "Need to set the XR_PASSWORD env variable e.g."
+        print "export XR_PASSWORD='admin'"
+        os._exit(0)
+
     
-    return (os.environ['SERVER_IP'], int(os.environ['SERVER_PORT']))
+    return (os.environ['SERVER_IP'], int(os.environ['SERVER_PORT']),
+            os.environ['XR_USER'], os.environ['XR_PASSWORD'])
 
 
 #
 # Setup the GRPC channel with the server, and issue RPCs
 #
 if __name__ == '__main__':
-    server_ip, server_port = get_server_ip_port()
-
+    server_ip, server_port, xr_user, xr_passwd = get_environment_variables()
+    
     print "Using GRPC Server IP(%s) Port(%s)" %(server_ip, server_port)
 
     # Create the channel for gRPC.
@@ -47,7 +62,7 @@ if __name__ == '__main__':
     # Ereate the gRPC stub.
     stub = mdt_grpc_dialin_pb2.beta_create_gRPCConfigOper_stub(channel)
 
-    metadata = [('username', 'vagrant'), ('password', 'vagrant')]
+    metadata = [('username', xr_user), ('password', xr_passwd)]
     Timeout = 3600*24*365 # Seconds
 
     sub_args = mdt_grpc_dialin_pb2.CreateSubsArgs(ReqId=99, encode=2, subidstr='IPV6')

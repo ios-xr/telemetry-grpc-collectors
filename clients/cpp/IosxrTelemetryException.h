@@ -2,14 +2,11 @@
 
 #include <stdexcept>
 
-#include <folly/Format.h>
-
 namespace iosxr {
 
 class IosxrTelemetryException : public std::runtime_error {
  public:
   explicit IosxrTelemetryException(const std::string& exception)
-      : std::runtime_error(
-            folly::sformat("IosxrTelemetry exception: {} ", exception)) {}
+      : std::runtime_error(std::string("IosxrTelemetry exception: ") + exception) {}
 };
 } // namespace iosxr 

@@ -20,14 +20,14 @@ namespace {
     std::map<std::string, std::string>
     active_path_map = {
                         { "interface", "GigabitEthernet0/0/0/0" },
-                        { "neighbor", "1010:1010::2" },
+                        { "neighbor", "1010:1010::20" },
                         { "reachability_state", "reachable" }
                       };
 
     std::map<std::string, std::string>
     backup_path_map = { 
                          { "interface", "GigabitEthernet0/0/0/1" },
-                         { "neighbor", "2020:2020::2" },
+                         { "neighbor", "2020:2020::20" },
                          { "reachability_state", "reachable" }
                       };
 }
@@ -44,7 +44,6 @@ bool map_compare (Map const &lhs, Map const &rhs) {
 
 
 TelemetryDecode::TelemetryDecode(std::shared_ptr<grpc::Channel> Channel)
-  : telemetry_action_(std::make_unique<TelemetryAction>(Channel))
 {
    decodeSensorPathMapGPB.insert(
                  std::make_pair(
@@ -112,7 +111,7 @@ DecodeIPv6NeighborsGPB(const ::telemetry::TelemetryRowGPB& telemetry_gpb_row)
                   << neighbor;
  
     } else {
-        throw IosxrTelemetryException(folly::sformat(
+        throw IosxrTelemetryException(std::string(
                     "Failed to fetch IPv6 neighbor entry keys"));
     }
 
@@ -130,7 +129,7 @@ DecodeIPv6NeighborsGPB(const ::telemetry::TelemetryRowGPB& telemetry_gpb_row)
                   <<  reachability_state;
 
     } else {
-        throw IosxrTelemetryException(folly::sformat(
+        throw IosxrTelemetryException(std::string(
                     "Failed to fetch IPv6 neighbor entry"));
     }
 
@@ -190,9 +189,7 @@ TelemetryDecode::DecodeTelemetryDataGPB(const telemetry::Telemetry& telemetry_da
         path_map_vector.clear();
 
     } else {
-        throw IosxrTelemetryException(folly::sformat(
-                "Encoding Path {} not found in registered sensor paths",
-                telemetry_data.encoding_path())); 
+        throw IosxrTelemetryException(std::string("Encoding Path")+telemetry_data.encoding_path()+std::string("not found in registered sensor paths"));
     }
 }
 
