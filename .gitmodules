@@ -1,0 +1,3 @@
+[submodule "bigmuddy-network-telemetry-proto"]
+	path = bigmuddy-network-telemetry-proto
+	url = https://github.com/cisco/bigmuddy-network-telemetry-proto
