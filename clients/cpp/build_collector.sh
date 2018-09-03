@@ -1,5 +1,4 @@
-#!/bin/bash -e
-
+#!/bin/bash
 #
 # Copyright (c) 2014-present, Facebook, Inc.
 #
@@ -7,7 +6,14 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-set -ex
+if [[ $(/usr/bin/id -u) -ne 0 ]]; then
+    echo "Not running as sudo"
+    echo "Please run the script as : sudo <scriptpath>"
+    exit
+fi
+
+
+./${SCRIPT_DIR}/../../build/cpp/build_ipv6_nd_lib.sh -p 3.5.0 -g 1.7.0
 
 SCRIPT_DIR="$(cd "$(dirname "${0}")"; echo "$(pwd)")"
 
@@ -26,38 +32,44 @@ find_github_hash() {
 }
 
 install_glog() {
-  pushd .
-  if [[ ! -e "glog" ]]; then
-    git clone https://github.com/google/glog
+  glog_installed=`pkg-config --exists libglog && echo exists`
+  if [[ $glog_installed != "exists" ]]; then
+    pushd .
+    if [[ ! -e "glog" ]]; then
+      git clone https://github.com/google/glog
+    fi
+    cd glog
+    git fetch origin
+    git checkout v0.3.5
+    set -eu && autoreconf -i
+    ./configure
+    make
+    make install
+    ldconfig
+    popd
   fi
-  cd glog
-  git fetch origin
-  git checkout v0.3.5
-  set -eu && autoreconf -i
-  ./configure
-  make
-  make install
-  ldconfig
-  popd
 }
 
 install_gflags() {
-  pushd .
-  if [[ ! -e "gflags" ]]; then
-    git clone https://github.com/gflags/gflags
+  gflags_installed=`pkg-config --exists gflags && echo exists`
+  if [[ $gflags_installed != "exists" ]]; then
+    pushd .
+    if [[ ! -e "gflags" ]]; then
+      git clone https://github.com/gflags/gflags
+    fi
+    cd gflags
+    git fetch origin
+    git checkout v2.2.0
+    if [[ ! -e "mybuild" ]]; then
+      mkdir mybuild
+    fi
+    cd mybuild
+    cmake -DBUILD_SHARED_LIBS=ON ..
+    make
+    make install
+    ldconfig
+    popd
   fi
-  cd gflags
-  git fetch origin
-  git checkout v2.2.0
-  if [[ ! -e "mybuild" ]]; then
-    mkdir mybuild
-  fi
-  cd mybuild
-  cmake -DBUILD_SHARED_LIBS=ON ..
-  make
-  make install
-  ldconfig
-  popd
 }
 
 #
@@ -104,5 +116,7 @@ install_gflags
 
 rm -rf ${SCRIPT_DIR}/deps
 
-echo "Miscellaneous Dependencies built and installed successfully"
+cd ${SCRIPT_DIR}/
+make
+
 exit 0

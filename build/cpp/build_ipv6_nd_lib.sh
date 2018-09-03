@@ -102,6 +102,7 @@ cp ${proto_archive_ipv6_nd}/telemetry.proto ./proto/
 $SCRIPT_DIR/gen-cpp-bindings-ipv6-nd.sh
 
 # Compile the object files and build library
+cd $SCRIPT_DIR/ipv6-nd-make
 make
 
 # Install the built xrtelemetry library

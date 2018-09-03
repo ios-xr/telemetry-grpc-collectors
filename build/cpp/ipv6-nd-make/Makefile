@@ -4,8 +4,8 @@ TARGET_LIB = libxrtelemetry.a # target lib
 LIBDIR = /usr/local/lib/
 INCLUDEDIR = /usr/local/include/xrtelemetry
 
-SRCDIR = src/gen-cpp
-OBJDIR = src/gen-obj
+SRCDIR = ../src/gen-ipv6-nd-cpp
+OBJDIR = ../src/gen-ipv6-nd-obj
 
 STRUCTURE := $(shell find ./$(SRCDIR) -type d -links 2)   
 INCSTRUCTURE := $(addprefix $(INCLUDEDIR)/,$(STRUCTURE)) 
@@ -15,7 +15,7 @@ SRCFILES := $(filter %.cc,$(CODEFILES))
 OBJFILES := $(subst $(SRCDIR),$(OBJDIR),$(SRCFILES:%.cc=%.o)) 
 OBJFILES := $(OBJFILES) $(OBJDIR)/telemetry.pb.o $(OBJDIR)/telemetry.grpc.pb.o
 INCFILES := $(filter %.h,$(CODEFILES)) 
-INCFILES := $(subst ./src/gen-cpp/,,$(INCFILES))
+INCFILES := $(subst ../src/gen-ipv6-nd-cpp/,,$(INCFILES))
 INCFILES := $(INCFILES) telemetry.pb.h telemetry.grpc.pb.h
 print-%  : ; @echo $* = $($*)
 
@@ -38,4 +38,4 @@ install::
 
 .PHONY: clean
 clean:
-	-${RM} ${TARGET_LIB} ${INCLUDEDIR} src/
+	-${RM} ${TARGET_LIB} ${INCLUDEDIR} ../src/
