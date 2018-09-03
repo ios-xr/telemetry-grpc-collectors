@@ -2,15 +2,15 @@
 
 # Standard python libs
 import os,sys
-sys.path.append("../../build/python/src/genpy")
-sys.path.append("../../build/python/src/genpy/src/genpy/cisco_ios_xr_ipv6_nd_oper/ipv6_node_discovery/nodes/node/neighbor_interfaces/neighbor_interface/host_addresses/host_address/")
+sys.path.append("../../build/python/src/genpy-ipv6-nd")
+sys.path.append("../../build/python/src/genpy-ipv6-nd/cisco_ios_xr_ipv6_nd_oper/ipv6_node_discovery/nodes/node/neighbor_interfaces/neighbor_interface/host_addresses/host_address/")
 import ast, pprint 
 import pdb
 import yaml, json
 import telemetry_pb2
-from mdt_grpc_dialin import mdt_grpc_dialin_pb2
-import json_format
-from grpc.beta import implementations
+from mdt_grpc_dialin import mdt_grpc_dialin_pb2, mdt_grpc_dialin_pb2_grpc
+from google.protobuf.json_format import MessageToJson
+import grpc
 from ipv6_nd_neighbor_entry_pb2 import ipv6_nd_neighbor_entry_KEYS, ipv6_nd_neighbor_entry
  
 #
@@ -18,28 +18,28 @@ from ipv6_nd_neighbor_entry_pb2 import ipv6_nd_neighbor_entry_KEYS, ipv6_nd_neig
 #
 def get_environment_variables():
     # Get GRPC Server's IP from the environment
-    if 'SERVER_IP' not in os.environ.keys():
-        print "Need to set the SERVER_IP env variable e.g."
-        print "export SERVER_IP='10.30.110.214'"
+    if 'SERVER_IP' not in list(os.environ.keys()):
+        print("Need to set the SERVER_IP env variable e.g.")
+        print("export SERVER_IP='10.30.110.214'")
         os._exit(0)
     
     # Get GRPC Server's Port from the environment
-    if 'SERVER_PORT' not in os.environ.keys():
-        print "Need to set the SERVER_PORT env variable e.g."
-        print "export SERVER_PORT='57777'"
+    if 'SERVER_PORT' not in list(os.environ.keys()):
+        print("Need to set the SERVER_PORT env variable e.g.")
+        print("export SERVER_PORT='57777'")
         os._exit(0)
 
 
     # Get XR Username from the environment
-    if 'XR_USER' not in os.environ.keys():
-        print "Need to set the XR_USER env variable e.g."
-        print "export XR_USER='admin'"
+    if 'XR_USER' not in list(os.environ.keys()):
+        print("Need to set the XR_USER env variable e.g.")
+        print("export XR_USER='admin'")
         os._exit(0)
 
     # Get XR Password from the environment
-    if 'XR_PASSWORD' not in os.environ.keys():
-        print "Need to set the XR_PASSWORD env variable e.g."
-        print "export XR_PASSWORD='admin'"
+    if 'XR_PASSWORD' not in list(os.environ.keys()):
+        print("Need to set the XR_PASSWORD env variable e.g.")
+        print("export XR_PASSWORD='admin'")
         os._exit(0)
 
     
@@ -53,14 +53,14 @@ def get_environment_variables():
 if __name__ == '__main__':
     server_ip, server_port, xr_user, xr_passwd = get_environment_variables()
     
-    print "Using GRPC Server IP(%s) Port(%s)" %(server_ip, server_port)
+    print("Using GRPC Server IP(%s) Port(%s)" %(server_ip, server_port))
 
     # Create the channel for gRPC.
-    channel = implementations.insecure_channel(server_ip, server_port)
+    channel = grpc.insecure_channel(str(server_ip)+":"+str(server_port))
 
 
     # Ereate the gRPC stub.
-    stub = mdt_grpc_dialin_pb2.beta_create_gRPCConfigOper_stub(channel)
+    stub = mdt_grpc_dialin_pb2_grpc.gRPCConfigOperStub(channel)
 
     metadata = [('username', xr_user), ('password', xr_passwd)]
     Timeout = 3600*24*365 # Seconds
@@ -93,13 +93,13 @@ if __name__ == '__main__':
             ipv6_nd_neighbor_entry_content = ipv6_nd_neighbor_entry()
             ipv6_nd_neighbor_entry_content.ParseFromString(telemetry_gpb_row.content)
 
-            content_dump = json_format.MessageToJson(ipv6_nd_neighbor_entry_content)
-            keys_dump = json_format.MessageToJson(ipv6_nd_neighbor_entry_keys)
+            content_dump = MessageToJson(ipv6_nd_neighbor_entry_content)
+            keys_dump = MessageToJson(ipv6_nd_neighbor_entry_keys)
 
             gpb_row_dict["content"].update(yaml.safe_load(content_dump))
             gpb_row_dict["keys"].update(yaml.safe_load(keys_dump))
 
             gpb_rows.append(gpb_row_dict)
 
-            print pprint.pprint(gpb_rows) 
+            print(pprint.pprint(gpb_rows)) 
     os._exit(0)
