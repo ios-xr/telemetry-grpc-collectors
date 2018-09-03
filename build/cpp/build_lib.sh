@@ -83,23 +83,19 @@ cd ~/ && rm -rf ~/tempdir
 cd $SCRIPT_DIR
 
 # Clean up first
-./clean_ipv6_nd_lib.sh
+./clean.sh
 
 mkdir -p $SCRIPT_DIR/proto/
 
 # Extract proto files associated with IPv6 ND Oper data
 
-proto_archive_ipv6_nd="../../bigmuddy-network-telemetry-proto/proto_archive/"
+proto_archive="../../bigmuddy-network-telemetry-proto/proto_archive/"
 
-cp -r ${proto_archive_ipv6_nd}/cisco_ios_xr_ipv6_nd_oper/  ./proto/cisco_ios_xr_ipv6_nd_oper/ 
-cp -r ${proto_archive_ipv6_nd}/mdt_grpc_dialin/  ./proto/mdt_grpc_dialin
-cp -r ${proto_archive_ipv6_nd}/mdt_grpc_dialout/ ./proto/mdt_grpc_dialout
-cp ${proto_archive_ipv6_nd}/telemetry.proto ./proto/
-
+cp -r ${proto_archive}/*  ./proto/ 
 
 #Generate the c++ binding from proto files
 
-$SCRIPT_DIR/gen-cpp-bindings-ipv6-nd.sh
+$SCRIPT_DIR/gen-cpp-bindings.sh
 
 # Compile the object files and build library
 make

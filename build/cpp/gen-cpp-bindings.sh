@@ -13,21 +13,21 @@ if [ -d src/gen-cpp ]; then
   rm -r src/gen-cpp
 fi
 
-mkdir -p src/gen-ipv6-nd-cpp
-mkdir -p src/gen-ipv6-nd-obj
+mkdir -p src/gen-cpp
+mkdir -p src/gen-obj
 printf "Generating cplusplus bindings..."
 
 cd ./proto/
 
 for dir in `find . -type d -links 2`; do
-  protoc -I ./  --grpc_out=../src/gen-ipv6-nd-cpp --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` $dir/*.proto
-  protoc -I ./ --cpp_out=../src/gen-ipv6-nd-cpp $dir/*.proto
-  mkdir -p ../src/gen-ipv6-nd-obj/$dir
+  protoc -I ./  --grpc_out=../src/gen-cpp --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` $dir/*.proto
+  protoc -I ./ --cpp_out=../src/gen-cpp $dir/*.proto
+  mkdir -p ../src/gen-obj/$dir
 done
 
 for file in .; do
-  protoc -I ./  --grpc_out=../src/gen-ipv6-nd-cpp --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` $file/*.proto
-  protoc -I ./ --cpp_out=../src/gen-ipv6-nd-cpp $file/*.proto
+  protoc -I ./  --grpc_out=../src/gen-cpp --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` $file/*.proto
+  protoc -I ./ --cpp_out=../src/gen-cpp $file/*.proto
 done
 
 echo "Done"
