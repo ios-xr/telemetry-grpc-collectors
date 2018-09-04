@@ -151,7 +151,7 @@ TelemetryStream::AsyncCompleteRpc()
 
 TelemetryStream::AsyncClientCall::AsyncClientCall(std::shared_ptr<grpc::Channel> channel)
   : callStatus_(CREATE),
-    telemetryDecode_(std::make_unique<TelemetryDecode>(channel)) {}
+    telemetryDecode_() {}
 
 TelemetryStream::AsyncClientCall::~AsyncClientCall() 
 {

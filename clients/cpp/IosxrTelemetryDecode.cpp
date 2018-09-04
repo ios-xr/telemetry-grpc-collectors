@@ -37,7 +37,7 @@ bool map_compare (Map const &lhs, Map const &rhs) {
 
 
 
-TelemetryDecode::TelemetryDecode(std::shared_ptr<grpc::Channel> Channel)
+TelemetryDecode::TelemetryDecode()
 {
    decodeSensorPathMapGPB.insert(
                  std::make_pair(

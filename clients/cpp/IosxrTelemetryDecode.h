@@ -30,7 +30,7 @@ using DecodeSensorPathMapGPBKV = std::unordered_map<std::string, DecodeSensorPat
 
 class TelemetryDecode {
 public:
-    explicit TelemetryDecode(std::shared_ptr<grpc::Channel> Channel);
+    explicit TelemetryDecode();
     ~TelemetryDecode();
 
     DecodeSensorPathMapGPB decodeSensorPathMapGPB;
