@@ -1,26 +1,8 @@
 #pragma once
 
-#include <stdint.h>
-#include <thread>
-#include <condition_variable>
-#include <memory>
-#include <string>
-#include <sys/socket.h>
-#include <glog/logging.h>
-#include <arpa/inet.h>
-
-#include <grpc++/grpc++.h>
-/*#include <iosxrsl/sl_global.grpc.pb.h>
-#include <iosxrsl/sl_global.pb.h>
-#include <iosxrsl/sl_common_types.pb.h>
-#include <iosxrsl/sl_version.pb.h>
-*/
-
-#include <xrtelemetry/telemetry.pb.h>
-#include <xrtelemetry/telemetry.grpc.pb.h>
 #include <xrtelemetry/mdt_grpc_dialin/mdt_grpc_dialin.grpc.pb.h>
 #include <xrtelemetry/mdt_grpc_dialin/mdt_grpc_dialin.pb.h>
-#include <xrtelemetry/cisco_ios_xr_ipv6_nd_oper/ipv6_node_discovery/nodes/node/neighbor_interfaces/neighbor_interface/host_addresses/host_address/ipv6_nd_neighbor_entry.pb.h>
+
 #include "IosxrTelemetryDecode.h"
 
 namespace iosxr {

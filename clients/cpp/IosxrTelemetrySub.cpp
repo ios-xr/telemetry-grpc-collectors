@@ -1,6 +1,4 @@
 #include "IosxrTelemetrySub.h" 
-#include <google/protobuf/text_format.h>
-#include <google/protobuf/util/json_util.h>
 
 using grpc::ClientContext;
 using grpc::ClientReader;

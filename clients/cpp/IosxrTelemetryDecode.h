@@ -2,18 +2,18 @@
 
 #include <stdint.h>
 #include <thread>
-#include <condition_variable>
-#include <memory>
 #include <string>
-#include <sys/socket.h>
 #include <glog/logging.h>
-#include <arpa/inet.h>
 
+
+#include <google/protobuf/text_format.h>
+#include <google/protobuf/util/json_util.h>
 #include <grpc++/grpc++.h>
 
 #include <xrtelemetry/telemetry.pb.h>
-#include <xrtelemetry/telemetry.grpc.pb.h>
 #include <xrtelemetry/cisco_ios_xr_ipv6_nd_oper/ipv6_node_discovery/nodes/node/neighbor_interfaces/neighbor_interface/host_addresses/host_address/ipv6_nd_neighbor_entry.pb.h>
+
+#include "IosxrTelemetryException.h"
 
 namespace iosxr {
 

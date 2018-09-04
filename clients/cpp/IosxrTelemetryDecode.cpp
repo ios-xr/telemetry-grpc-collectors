@@ -1,10 +1,4 @@
 #include "IosxrTelemetryDecode.h" 
-#include "IosxrTelemetryException.h"
-
-
-#include <google/protobuf/text_format.h>
-#include <google/protobuf/util/json_util.h>
-
 
 namespace iosxr {
 
