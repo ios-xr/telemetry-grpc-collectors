@@ -2,15 +2,18 @@
 
 # Standard python libs
 import os,sys
-sys.path.append("../../build/python/src/genpy-ipv6-nd")
-sys.path.append("../../build/python/src/genpy-ipv6-nd/cisco_ios_xr_ipv6_nd_oper/ipv6_node_discovery/nodes/node/neighbor_interfaces/neighbor_interface/host_addresses/host_address/")
-import ast, pprint 
-import pdb
-import yaml, json
-import telemetry_pb2
-from mdt_grpc_dialin import mdt_grpc_dialin_pb2, mdt_grpc_dialin_pb2_grpc
+import pprint
+import yaml
+
+# Import gRPC libraries
 from google.protobuf.json_format import MessageToJson
 import grpc
+
+# Import generated python bindings
+sys.path.append("../../build/python/src/genpy-ipv6-nd")
+sys.path.append("../../build/python/src/genpy-ipv6-nd/cisco_ios_xr_ipv6_nd_oper/ipv6_node_discovery/nodes/node/neighbor_interfaces/neighbor_interface/host_addresses/host_address/")
+import telemetry_pb2
+from mdt_grpc_dialin import mdt_grpc_dialin_pb2, mdt_grpc_dialin_pb2_grpc
 from ipv6_nd_neighbor_entry_pb2 import ipv6_nd_neighbor_entry_KEYS, ipv6_nd_neighbor_entry
  
 #
@@ -59,7 +62,7 @@ if __name__ == '__main__':
     channel = grpc.insecure_channel(str(server_ip)+":"+str(server_port))
 
 
-    # Ereate the gRPC stub.
+    # Create the gRPC stub.
     stub = mdt_grpc_dialin_pb2_grpc.gRPCConfigOperStub(channel)
 
     metadata = [('username', xr_user), ('password', xr_passwd)]
