@@ -10,7 +10,9 @@ We make it slightly simpler and instead of requesting telemetry data in a GPB fo
 
 Before we start, install the dependencies required to connect to the router over gRPC to receive the data.
 
-## Install dependencies for the gRPC telemetry client
+## Install dependencies for the gRPC telemetry client . 
+
+```
 admin@devbox:~$ sudo pip2 install grpcio-tools==1.7.0 googleapis-common-protos
 The directory '/home/admin/.cache/pip/http' or its parent directory is not owned by the current user and the cache has been disabled. Please check the permissions and owner of that directory. If executing pip with sudo, you may want sudo's -H flag.
 The directory '/home/admin/.cache/pip' or its parent directory is not owned by the current user and caching wheels has been disabled. check the permissions and owner of that directory. If executing pip with sudo, you may want sudo's -H flag.
@@ -31,7 +33,7 @@ Successfully installed googleapis-common-protos-1.5.6 grpcio-tools-1.7.0
 You are using pip version 8.1.1, however version 19.0.1 is available.
 You should consider upgrading via the 'pip install --upgrade pip' command.
 admin@devbox:~$ 
-
+```
 
 ## Clone the Telemetry gRPC collectors git repo
 We have published a few samples for c++ and python to help developers write their own gRPC based collectors to receive telemetry data from IOS-XR.
@@ -40,6 +42,7 @@ The proto files that we use to create bindings and then write our own clients ar
 
 To start, first clone the telemetry-grpc-collectors repo into the devbox home directory:
 
+```
 admin@devbox:~$ 
 admin@devbox:~$ git clone --recursive https://github.com/ios-xr/telemetry-grpc-collectors ~/telemetry-grpc-collectors
 Cloning into 'telemetry-grpc-collectors'...
@@ -59,11 +62,13 @@ Resolving deltas: 100% (8337/8337), done.
 Checking connectivity... done.
 Submodule path 'bigmuddy-network-telemetry-proto': checked out '4419cd20fb73f05d059a37fa3e41fe55f02a528f'
 admin@devbox:~$ 
-
+```
 
 ## Build the Bindings for Model Driven Telemetry gRPC clients
 Hop into the build/python/ directory and generate the required bindings from the proto files:
 
+
+```
 admin@devbox:~$ 
 admin@devbox:~$ cd ~/telemetry-grpc-collectors/build/python/
 admin@devbox:python$ 
@@ -87,6 +92,8 @@ src/genpy/
 
 2 directories, 9 files
 admin@devbox:python$ 
+```
+
 
 ## Running a simple python Telemetry client
 
