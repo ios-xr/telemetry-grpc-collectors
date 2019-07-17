@@ -59,13 +59,16 @@ if __name__ == '__main__':
             # Go straight for telemetry data
             telemetry_pb = telemetry_pb2.Telemetry()
 
-            encoding_path = 'Cisco-IOS-XR-ipv4-bgp-oper:bgp/instances/'+\
+            encoding_path_1 = 'Cisco-IOS-XR-ipv4-bgp-oper:bgp/instances/'+\
                             'instance/instance-active/default-vrf/sessions/session'
 
-
+            encoding_path_2 = 'openconfig-network-instance:network-instances/network-instance/afts/'
+            
             try:
                 # Return in JSON format instead of protobuf.
-                if json.loads(segment.data)["encoding_path"] == encoding_path: 
+                if json.loads(segment.data)["encoding_path"] == encoding_path_1:
+                    print(json.dumps(json.loads(segment.data), indent=3))
+                elif encoding_path_2 in json.loads(segment.data)["encoding_path"]:
                     print(json.dumps(json.loads(segment.data), indent=3))
             except Exception as e: 
                 print("Failed to receive data, error: " +str(e))
