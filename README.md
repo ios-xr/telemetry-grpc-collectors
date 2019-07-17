@@ -115,10 +115,6 @@ admin@devbox:python$ export SERVER_IP=10.10.20.170
 admin@devbox:python$ export SERVER_PORT=57021
 admin@devbox:python$ 
 admin@devbox:python$ ./telemetry_client_json.py 
-
-
-
-```
 Using GRPC Server IP(10.30.110.215) Port(57778)
 {
    "encoding_path": "openconfig-network-instance:network-instances/network-instance/afts/mpls", 
